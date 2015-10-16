@@ -20,12 +20,10 @@
 #'   loading is in progress.
 #' @return the database connection.
 #' @export
-db_connection <- function(database.yml, env = "cache",
-                          verbose = TRUE, strict = TRUE) {
-  if (is.null(database.yml)) { if (strict) stop('database.yml is NULL') else return(NULL) }
+db_connection <- function(database.yml, env = "cache", verbose = TRUE) {
+  if (is.null(database.yml)) { stop('database.yml is NULL') }
   if (!file.exists(database.yml)) {
-    if (strict) stop("Provided database.yml file does not exist: ", database.yml)
-    else return(NULL)
+    stop("Provided database.yml file does not exist: ", database.yml)
   }
 
   if (verbose) message("* Loading database connection...\n")

@@ -4,7 +4,7 @@
 \alias{db_connection}
 \title{Obtain a connection to a database.}
 \usage{
-db_connection(database.yml, env = "cache", verbose = TRUE, strict = TRUE)
+db_connection(database.yml, env = "cache", verbose = TRUE)
 }
 \arguments{
 \item{database.yml}{character. The location of the database.yml file
