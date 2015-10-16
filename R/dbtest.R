@@ -2,8 +2,13 @@
 #' @return a database connection suitable for testing.
 #' @export
 db_test_con <- function(...) {
-  conn <- try(db_connection(
-    system.file(package = "dbtest", "database.yml"), env = "test", ...), silent = TRUE)
+  tryCatch({
+    conn <- db_connection(
+      system.file(package = "dbtest", "database.yml"), env = "test", ...))
+  }, error = function(e) {
+    stop(e)
+    #if (grepl("Couldn't find driver", conditionMessage(e))) { stop(e) }
+  })
   # if (is(conn, 'try-error')) {
   #   stop("Cannot run tests until you create a database named ", sQuote("travis"),
   #        "for user ", sQuote("postgres"), ". (You should be able to open ",
