@@ -4,7 +4,7 @@
 \alias{db_test_con}
 \title{Create a connection to a test database for testing database transactions.}
 \usage{
-db_test_con()
+db_test_con(...)
 }
 \value{
 a database connection suitable for testing.
