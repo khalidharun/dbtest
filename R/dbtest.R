@@ -4,7 +4,7 @@ database.yml <- system.file(package = "dbtest", "database.yml")
 #' @return a database connection suitable for testing.
 #' @export
 db_test_con <- function() {
-  conn <- try(silent = TRUE, db_connection(database.yml))
+  conn <- try(silent = TRUE, db_connection(database.yml, env = "test"))
   if (is(conn, 'try-error')) {
     stop("Cannot run tests until you create a database named ", sQuote("travis"),
          "for user ", sQuote("postgres"), ". (You should be able to open ",

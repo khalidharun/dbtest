@@ -1,4 +1,4 @@
-cache:
+test:
   adapter: Doesn't matter
   dbname: travis
   user: postgres

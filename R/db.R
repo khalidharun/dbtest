@@ -14,14 +14,13 @@
 #'
 #' @param database.yml character. The location of the database.yml file
 #'   to use. This could, for example, some file in the config directory.
-#' @param env character. What environment to use. The default is
-#'   `"cache"`.
+#' @param env character. What environment to use from the database.yml.
 #' @param verbose logical. Whether or not to print messages indicating
 #'   loading is in progress.
 #' @return the database connection.
 #' @export
-db_connection <- function(database.yml, env = "cache", verbose = TRUE) {
-  if (is.null(database.yml)) { stop('database.yml is NULL') }
+db_connection <- function(database.yml, env, verbose = TRUE) {
+  if (is.null(database.yml)) { stop("database.yml is NULL") }
   if (!file.exists(database.yml)) {
     stop("Provided database.yml file does not exist: ", database.yml)
   }
