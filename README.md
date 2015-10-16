@@ -21,6 +21,12 @@ dbtest::with_test_db(
 
 ...that connection will be reset to a test connection instead!  And all calls to the production database within your tests will be mocked as calls to the test database.
 
+Also, in your tests `with_test_db` will create an R object called `test_con` which you can use to work with the connection.
+
+```R
+dbtest::with_test_db(DBI::dbListTables(test_con))   # test_con is a connection to the test database.
+```
+
 
 ## Installation
 
