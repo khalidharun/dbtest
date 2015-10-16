@@ -4,7 +4,7 @@
 db_test_con <- function(...) {
   tryCatch({
     conn <- db_connection(
-      system.file(package = "dbtest", "database.yml"), env = "test", ...))
+      system.file(package = "dbtest", "database.yml"), env = "test", ...)
   }, error = function(e) {
     stop(e)
     #if (grepl("Couldn't find driver", conditionMessage(e))) { stop(e) }
