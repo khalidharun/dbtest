@@ -25,7 +25,10 @@ db_connection <- function(database.yml, env, verbose = TRUE) {
     stop("Provided database.yml file does not exist: ", database.yml)
   }
 
-  if (verbose) message("* Loading database connection...\n")
+  if (isTRUE(verbose) && !identical(options()$dbtest.verbose, FALSE)) {
+    message("* Loading database connection...\n")
+  }
+
   config.database <- read_yml(database.yml)
   if (!missing(env) && !is.null(env)) {
     if (!env %in% names(config.database))
