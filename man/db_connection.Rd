@@ -4,14 +4,13 @@
 \alias{db_connection}
 \title{Obtain a connection to a database.}
 \usage{
-db_connection(database.yml, env = "cache", verbose = TRUE)
+db_connection(database.yml, env, verbose = TRUE)
 }
 \arguments{
 \item{database.yml}{character. The location of the database.yml file
 to use. This could, for example, some file in the config directory.}
 
-\item{env}{character. What environment to use. The default is
-`"cache"`.}
+\item{env}{character. What environment to use from the database.yml.}
 
 \item{verbose}{logical. Whether or not to print messages indicating
 loading is in progress.}

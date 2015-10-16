@@ -26,8 +26,7 @@ db_connection <- function(database.yml, env, verbose = TRUE) {
   }
 
   if (verbose) message("* Loading database connection...\n")
-  database.yml <- paste(readLines(database.yml), collapse = "\n")
-  config.database <- yaml::yaml.load(database.yml)
+  config.database <- read_yml(database.yml)
   if (!missing(env) && !is.null(env)) {
     if (!env %in% names(config.database))
       stop(paste0("Unable to load database settings from database.yml ",

@@ -13,4 +13,4 @@ test_that("db_connection errors if the env is not in the database.yml", {
 test_that("db_connection can give a test connection", {
   expect_equal(db_test_con(),
     do.call(DBI::dbConnect, append(list(drv = DBI::dbDriver('Postgres')),
-      yaml::yaml.load(paste(readLines(database.yml), collapse = "\n"))$test[-1]))) })
+      read_yml(database.yml)$test[-1]))) })
