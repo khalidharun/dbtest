@@ -5,7 +5,7 @@
 #' @export
 expect_table <- function(table_name) {
   on_fail_message <- paste(table_name, "does not exist in the test database")
-  testthat::expect_true(DBI::dbExistsTable(test_con, table_name), on_fail_message)
+  testthat::expect_true(DBI::dbExistsTable(db_test_con(), table_name), on_fail_message)
 }
 
 
@@ -30,7 +30,7 @@ expect_sql_is <- function(statement, expected) {
 #' }
 #' @export
 expect_table_has <- function(test, table) {
-  if (!DBI::dbExistsTable(test_con, table)) { stop("No such table ", table, " found.") }
+  if (!DBI::dbExistsTable(db_test_con(), table)) { stop("No such table ", table, " found.") }
   column <- function(colname) {
     colname %in% unname(unlist(DBI::dbGetQuery(db_test_con(),
       paste0("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '",
