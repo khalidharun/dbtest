@@ -20,5 +20,22 @@ expect_sql_is <- function(statement, expected) {
   testthat::expect_equal(result, expected)
 }
 
-# expect_table_has(column("id"), table = "flights")
-# expect_table_has(count("id") > 0, table = "flights")
+
+#' Expect that the table has a certain property.
+#' @param test ANY. The test to run.
+#' @param table character. The name of the table to check.
+#' @examples \dontrun{
+#'   expect_table_has(column("id"), table = "flights")
+#'   expect_table_has(count("id") > 0, table = "flights")
+#' }
+#' @export
+expect_table_has <- function(test, table) {
+  if (!DBI::dbExistsTable(test_con, table)) { stop("No such table ", table, " found.") }
+  column <- function(colname) {
+    colname %in% unname(unlist(DBI::dbGetQuery(db_test_con(),
+      paste0("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '",
+        table, "';"))))
+  }
+  on_fail_message <- paste(table, "did not have property", deparse(substitute(test)))
+  testthat::expect_true(eval(substitute(test), envir = environment()), on_fail_message)
+}

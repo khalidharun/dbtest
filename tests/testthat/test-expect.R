@@ -68,25 +68,39 @@ with_test_db({
   describe("expect_table_has", {
     describe("column", {
       test_that("expect_table_has errors when there is no table", {
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
         expect_error(expect_table_has(column("id"), table = "flights"), "No such table")
       })
       test_that("expect_table_has is a passing test when the column is present", {
-        #TODO: create table
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+        DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
         expect_table_has(column("id"), table = "flights")
       })
       test_that("expect_table_has is a failing test when the column isn't present", {
-        expect_failed_test(expect_table_has(column("id"), table = "flights"))
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+        DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+        expect_failed_test(expect_table_has(column("noexist"), table = "flights"))
+      })
+      test_that("expect_table_has has an on failure message", {
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+        DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+        expect_equal(
+          get_failure_message(expect_table_has(column("noexist"), table = "flights"))[[2]],
+          "flights did not have property column(\"noexist\")")
       })
     })
     describe("count", {
       test_that("expect_table_has errors when there is no table", {
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
         expect_error(expect_table_has(count("id") > 1, table = "flights"), "No such table")
       })
       test_that("expect_table_has is a passing test when the query is true", {
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
         #TODO: create table
         expect_table_has(count("id") > 1, table = "flights")
       })
       test_that("expect_table_has is a failing test when the query is false", {
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
         #TODO: create table
         expect_failed_test(expect_table_has(count("id") > 3, table = "flights"))
       })
