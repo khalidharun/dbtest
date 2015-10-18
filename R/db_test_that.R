@@ -63,6 +63,7 @@ unmock_dbConnect <- function(DBI_namespace, old_dbConnect) {
 #'
 #' @param description character. The description of the test.
 #' @param test expression. The test to execute.
+#' @export
 db_test_that <- function(description, test) {
   with_test_db({
     lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
