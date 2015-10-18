@@ -1,7 +1,8 @@
 #' Create a connection to a test database for testing database transactions.
+#' @param ... list. Additional arguments to pass to /code{db_connection}
 #' @return a database connection suitable for testing.
 #' @export
-db_test_con <- function() {
+db_test_con <- function(...) {
   tryCatch({ db_connection(system.file(package = "dbtest", "database.yml"), env = "test", ...)
   }, error = function(e) {
     if (grepl("does not exist", conditionMessage(e))) {
