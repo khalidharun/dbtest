@@ -1,6 +1,9 @@
 # dbtest uses dbtest to test dbtest
 context("dbtest")
 
+old_verbose <- options()$dbtest.verbose
+options(dbtest.verbose = FALSE)
+
 call_to_actual_database_oh_no <- function() {
   DBI::dbConnect(drv = DBI::dbDriver("Postgres"), dbname = "noexist")
 }
@@ -45,3 +48,16 @@ describe("with_test_db", {
 
   options(dbtest.verbose = old_verbose)
 })
+
+
+describe("db_test_that", {
+  db_test_that("earlier database actions cannot interfere with later tests I", {
+    DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+    expect_table("flights")
+  })
+  db_test_that("earlier database actions cannot interfere with later tests II", {
+    expect_failed_test(expect_table("flights"))
+  })
+})
+
+options(dbtest.verbose = old_verbose)

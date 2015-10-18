@@ -27,6 +27,36 @@ Also, in your tests `with_test_db` will create an R object called `test_con` whi
 dbtest::with_test_db(DBI::dbListTables(test_con))   # test_con is a connection to the test database.
 ```
 
+-
+
+Lastly, to create separate, safe test blocks where database actions in previous tests do not affect future tests, wrap individual tests in `db_test_that` instead of `test_that`.  If you do this, you do not need to use `with_test_db`.
+
+
+## Further Testing
+
+You can then test your database with a variety of helpers:
+
+```R
+library(testthat)
+library(dbtest)
+
+db_test_that("My database has a test table", {
+  expect_table("test")
+})
+
+db_test_that("My test table has a test column", {
+  expect_table_has(column("test"), table = "test")
+})
+
+db_test_that("My test table has a test column with at least three entries", {
+  expect_table_has(count("test") >= 3, table = "test")
+})
+
+db_test_that("The first value of my test column is 'hello world'", {
+  expect_sql_is("SELECT test FROM test LIMIT 1", "hello_world")
+})
+```
+
 
 ## Installation
 
