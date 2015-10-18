@@ -1,4 +1,4 @@
-# expect_db_has(table("flights"))
-# expect_db_has(count("flights") > 0)
-# expect_table_has("flights", count("id") > 0)
-# expect_equal_with_sql(""
+# expect_table("flights")
+# expect_sql_is("SELECT id FROM flights LIMIT 1", 1)
+# expect_table_has(column("id"), table = "flights")
+# expect_table_has(count("id") > 0, table = "flights")
