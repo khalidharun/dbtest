@@ -33,21 +33,21 @@ dbtest::with_test_db(DBI::dbListTables(test_con))   # test_con is a connection t
 You can then test your database with a variety of helpers:
 
 ```R
-with_test_db({ test_that("My database has a test table", {
+db_test_that("My database has a test table", {
   expect_table("test")
-}) })
+})
 
-with_test_db({ test_that("My test table has a test column", {
+db_test_that("My test table has a test column", {
   expect_table_has(column("test"), table = "test")
-}) })
+})
 
-with_test_db({ test_that("My test table has a test column with at least three entries", {
+db_test_that("My test table has a test column with at least three entries", {
   expect_table_has(count("test") >= 3, table = "test")
-}) })
+})
 
-with_test_db({ test_that("The first value of my test column is 'hello world'", {
+db_test_that("The first value of my test column is 'hello world'", {
   expect_sql_is("SELECT test FROM test LIMIT 1", "hello_world")
-}) })
+})
 ```
 
 

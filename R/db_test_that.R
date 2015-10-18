@@ -53,3 +53,21 @@ unmock_dbConnect <- function(DBI_namespace, old_dbConnect) {
   assign("dbConnect", old_dbConnect, envir = DBI_namespace)
   lockBinding("dbConnect", DBI_namespace)
 }
+
+
+#' Run a single testthat test in a self-contained database transaction.
+#'
+#' This will contain your database actions to a single test, by deleting all the
+#' tables in the test db before you begin.  This keeps tests from interfering
+#' with each other.
+#'
+#' @param description character. The description of the test.
+#' @param test expression. The test to execute.
+db_test_that <- function(description, test) {
+  with_test_db({
+    lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+    assign("test_con", test_con, envir = .GlobalEnv)  # Attach test_con in all the scopes!
+    on.exit(rm("test_con", envir = .GlobalEnv))
+    eval(test)
+  })
+}
