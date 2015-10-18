@@ -2,25 +2,18 @@
 #' @return a database connection suitable for testing.
 #' @export
 db_test_con <- function(...) {
-  tryCatch({
-    conn <- db_connection(
-      system.file(package = "dbtest", "database.yml"), env = "test", ...)
+  tryCatch({ db_connection(system.file(package = "dbtest", "database.yml"), env = "test", ...)
   }, error = function(e) {
-    stop(e)
-    #if (grepl("Couldn't find driver", conditionMessage(e))) { stop(e) }
-  })
-  # if (is(conn, 'try-error')) {
-  #   stop("Cannot run tests until you create a database named ", sQuote("travis"),
-  #        "for user ", sQuote("postgres"), ". (You should be able to open ",
-  #        "the PostgreSQL console using ", dQuote("psql postgres"),
-  #        " from the command line. ",
-  #        "From within there, run ", dQuote(paste0("CREATE DATABASE travis; ",
-  #        "GRANT ALL PRIVILEGES ON DATABASE travis TO postgres;")),
-  #        " You might also need to run ", dQuote("ALTER ROLE postgres WITH LOGIN;"),
-  #        ")", call. = FALSE)
-  # }
-  conn
-}
+    if (grepl("does not exist", conditionMessage(e))) {
+      stop("Cannot run tests until you create a database named ", sQuote("travis"),
+           "for user ", sQuote("postgres"), ". (You should be able to open ",
+           "the PostgreSQL console using ", dQuote("psql postgres"),
+           " from the command line. ",
+           "From within there, run ", dQuote(paste0("CREATE DATABASE travis; ",
+           "GRANT ALL PRIVILEGES ON DATABASE travis TO postgres;")),
+           " You might also need to run ", dQuote("ALTER ROLE postgres WITH LOGIN;"),
+           ")", call. = FALSE)
+    } else { stop(e) } }) }
 
 
 #' Run a block of code where all DBI connections are mocked with the test connection.
