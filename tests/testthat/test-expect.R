@@ -34,12 +34,13 @@ with_test_db({
       lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
       DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
       expect_table("flights")
-      DBI::dbGetQuery(test_con, "DROP TABLE flights;")
     })
     test_that("expect_table is a failing test when there is no table", {
+      lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
       expect_failed_test(expect_table("flights"))
     })
     test_that("expect_table has an on failure message", {
+      lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
       expect_equal(get_failure_message(expect_table("flights"))[[2]],
         "flights does not exist in the test database")
     })
@@ -47,14 +48,19 @@ with_test_db({
 
   describe("expect_sql_is", {
     test_that("expect_sql_is errors when there is no table", {
-      expect_error(expect_sql_is("SELECT id FROM flights LIMIT 1", 1), "No such table")
+      lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+      expect_error(expect_sql_is("SELECT id FROM flights LIMIT 1", 1), "does not exist")
     })
     test_that("expect_sql_is is a passing test when the SQL query matches", {
-      #TODO: create table
+      lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+      DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+      DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
       expect_sql_is("SELECT id FROM flights LIMIT 1", 1)
     })
     test_that("expect_sql_is is a failing test when the SQL query doesn't match", {
-      #TODO: create table
+      lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+      DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+      DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
       expect_failed_test(expect_sql_is("SELECT id FROM flights LIMIT 1", 2))
     })
   })
