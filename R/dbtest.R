@@ -17,7 +17,7 @@ db_test_con <- function(...) {
 
 
 #' Run a block of code where all DBI connections are mocked with the test connection.
-#' @param expr. A block of R code to run.
+#' @param expr expression. A block of R code to run.
 #' @export
 with_test_db <- function(expr) {
   DBI_namespace <- getNamespace("DBI") 
