@@ -1,8 +1,8 @@
 Package: dbtest
-Title: Write database tests in R
+Title: Database testing and mocking in R. 
 Version: 0.0.0.9000
 Authors@R: person("Peter", "Hurford", email = "peter@peterhurford.com", role = c("aut", "cre"))
-Description: Write database tests in R
+Description: DBTest is a package to provide database testing and mocking in R.
 Depends: R (>= 3.2.0)
 Imports:
     RPostgres (>= 0.1.1),
@@ -10,5 +10,5 @@ Imports:
     yaml
 Suggests:
     testthat
-License: MIT
+License: MIT + file LICENSE
 LazyData: true
