@@ -1,3 +1,8 @@
+# Version 0.9.9.9002
+
+- Introduces `db_test_that`, a safe test wrapper for isolating database actions.
+- Introduces database testing helpers, such as `expect_table`, `expect_table_has`, and `expect_sql_is`.
+
 # Version 0.0.0.9001
 
 - `db_test_con` passes along errors making for easier debugging.
