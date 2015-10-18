@@ -3,5 +3,8 @@
 export(build_connection)
 export(db_connection)
 export(db_test_con)
+export(expect_sql_is)
+export(expect_table)
+export(expect_table_has)
 export(is_db_connected)
 export(with_test_db)
