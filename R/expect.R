@@ -36,6 +36,10 @@ expect_table_has <- function(test, table) {
       paste0("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '",
         table, "';"))))
   }
+  count <- function(colname) {
+    unname(unlist(DBI::dbGetQuery(db_test_con(),
+      paste0("SELECT COUNT(", colname, ") FROM ", table, ";"))))
+  }
   on_fail_message <- paste(table, "did not have property", deparse(substitute(test)))
   testthat::expect_true(eval(substitute(test), envir = environment()), on_fail_message)
 }

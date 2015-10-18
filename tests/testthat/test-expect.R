@@ -81,7 +81,7 @@ with_test_db({
         DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
         expect_failed_test(expect_table_has(column("noexist"), table = "flights"))
       })
-      test_that("expect_table_has has an on failure message", {
+      test_that("expect_table_has has an on failure message I", {
         lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
         DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
         expect_equal(
@@ -94,15 +94,36 @@ with_test_db({
         lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
         expect_error(expect_table_has(count("id") > 1, table = "flights"), "No such table")
       })
-      test_that("expect_table_has is a passing test when the query is true", {
+      test_that("expect_table_has is a passing test when the query is true I", {
         lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
-        #TODO: create table
+        DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
         expect_table_has(count("id") > 1, table = "flights")
       })
       test_that("expect_table_has is a failing test when the query is false", {
         lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
-        #TODO: create table
-        expect_failed_test(expect_table_has(count("id") > 3, table = "flights"))
+        DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+        expect_failed_test(expect_table_has(count("id") > 2, table = "flights"))
+      })
+      test_that("expect_table_has has an on failure message II", {
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+        DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+        expect_equal(
+          get_failure_message(expect_table_has(count("id") > 2, table = "flights"))[[2]],
+          "flights did not have property count(\"id\") > 2")
+      })
+      test_that("expect_table_has is a failing test when the query is true II", {
+        lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+        DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+        DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+        expect_table_has(count("id") > 2, table = "flights")
       })
     })
   })
