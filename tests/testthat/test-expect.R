@@ -1,0 +1,91 @@
+context("expect")
+
+old_verbose <- options()$dbtest.verbose
+options(dbtest.verbose = FALSE)
+
+#TODO: Move this to a helper file
+with_mocked_testthat <- function(expr) {
+  testthat::with_mock(`testthat::get_reporter` = function(...) {
+    list(add_result = function(...) { NULL }) }, expr) }
+
+test_passed <- function(expr) {
+  with_mocked_testthat(expr)$passed
+}
+
+get_failure_message <- function(expr) {
+  strsplit(with_mocked_testthat(expr)$failure_msg, "\n")[[1]]
+}
+
+expect_failed_test <- function(test) {
+  expect_false(test_passed(test))
+}
+
+describe("with_mocked_testthat", {
+  test_that("it can extract an error without erroring", {
+    expect_failed_test(expect_true(FALSE))
+  })
+})
+
+
+with_test_db({
+  describe("expect_table", {
+    test_that("expect_table is a passing test when there is a table", {
+      #TODO: Move this wrapper to a generic `db_test_that`?
+      lapply(DBI::dbListTables(test_con), function(t) DBI::dbRemoveTable(test_con, t))
+      DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+      expect_table("flights")
+      DBI::dbGetQuery(test_con, "DROP TABLE flights;")
+    })
+    test_that("expect_table is a failing test when there is no table", {
+      expect_failed_test(expect_table("flights"))
+    })
+    test_that("expect_table has an on failure message", {
+      expect_equal(get_failure_message(expect_table("flights"))[[2]],
+        "flights does not exist in the test database")
+    })
+  })
+
+  describe("expect_sql_is", {
+    test_that("expect_sql_is errors when there is no table", {
+      expect_error(expect_sql_is("SELECT id FROM flights LIMIT 1", 1), "No such table")
+    })
+    test_that("expect_sql_is is a passing test when the SQL query matches", {
+      #TODO: create table
+      expect_sql_is("SELECT id FROM flights LIMIT 1", 1)
+    })
+    test_that("expect_sql_is is a failing test when the SQL query doesn't match", {
+      #TODO: create table
+      expect_failed_test(expect_sql_is("SELECT id FROM flights LIMIT 1", 2))
+    })
+  })
+
+  describe("expect_table_has", {
+    describe("column", {
+      test_that("expect_table_has errors when there is no table", {
+        expect_error(expect_table_has(column("id"), table = "flights"), "No such table")
+      })
+      test_that("expect_table_has is a passing test when the column is present", {
+        #TODO: create table
+        expect_table_has(column("id"), table = "flights")
+      })
+      test_that("expect_table_has is a failing test when the column isn't present", {
+        expect_failed_test(expect_table_has(column("id"), table = "flights"))
+      })
+    })
+    describe("count", {
+      test_that("expect_table_has errors when there is no table", {
+        expect_error(expect_table_has(count("id") > 1, table = "flights"), "No such table")
+      })
+      test_that("expect_table_has is a passing test when the query is true", {
+        #TODO: create table
+        expect_table_has(count("id") > 1, table = "flights")
+      })
+      test_that("expect_table_has is a failing test when the query is false", {
+        #TODO: create table
+        expect_failed_test(expect_table_has(count("id") > 3, table = "flights"))
+      })
+    })
+  })
+})
+
+options(dbtest.verbose = old_verbose)
