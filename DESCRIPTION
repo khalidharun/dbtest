@@ -6,7 +6,7 @@ Description: Write database tests in R
 Depends: R (>= 3.2.0)
 Imports:
     RPostgres (>= 0.1.1),
-    RPostgreSQL
+    RPostgreSQL,
     DBI,
     yaml
 Suggests:
