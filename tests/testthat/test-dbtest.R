@@ -1,16 +1,33 @@
+# dbtest uses dbtest to test dbtest
 context("dbtest")
 
 call_to_actual_database_oh_no <- function() {
   DBI::dbConnect(drv = DBI::dbDriver("Postgres"), dbname = "noexist")
 }
 
-describe("dbtest uses dbtest to test dbtest", {
+describe("tb_test_con", {
+  test_that("A missing travis db will result in a custom travis db error", {
+    bad_db <- list("test" = list(dbname = "travis", user = "bogus", password = "", host = "localhost"))
+    testthat::with_mock(`dbtest::read_yml` = function(...) bad_db,
+      expect_error(db_test_con(), "Cannot run tests until you create a database named")) })
+
+  test_that("A missing driver will result in a driver error", {
+    testthat::with_mock(`RPostgres::Postgres` = function(...) DBI::dbDriver("noexist"),
+      expect_error(db_test_con(), "Couldn't find driver noexist")) })
+
+  test_that("A generic error will return that generic error", {
+    testthat::with_mock(`RPostgres::Postgres` = function(...) stop("Error!"),
+      expect_error(db_test_con(), "Error!")) })
+
+  test_that("The connection returns", { expect_is(db_test_con(), "PqConnection") }) })
+
+
+describe("with_test_db", {
   old_verbose <- options()$dbtest.verbose
   options(dbtest.verbose = FALSE)
 
   test_that("our actual call will error", {
-    expect_error(call_to_actual_database_oh_no())
-  })
+    expect_error(call_to_actual_database_oh_no()) })
 
   with_test_db({
     test_that("stubbing the test connection doesn't error", {

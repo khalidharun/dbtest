@@ -7,7 +7,7 @@
 with_test_db(expr)
 }
 \arguments{
-\item{expr.}{A block of R code to run.}
+\item{expr}{expression. A block of R code to run.}
 }
 \description{
 Run a block of code where all DBI connections are mocked with the test connection.

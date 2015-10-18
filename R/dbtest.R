@@ -1,25 +1,24 @@
 #' Create a connection to a test database for testing database transactions.
+#' @param ... list. Additional arguments to pass to /code{db_connection}
 #' @return a database connection suitable for testing.
 #' @export
 db_test_con <- function(...) {
-  conn <- try(db_connection(
-    system.file(package = "dbtest", "database.yml"), env = "test", ...), silent = TRUE)
-  if (is(conn, 'try-error')) {
-    stop("Cannot run tests until you create a database named ", sQuote("travis"),
-         "for user ", sQuote("postgres"), ". (You should be able to open ",
-         "the PostgreSQL console using ", dQuote("psql postgres"),
-         " from the command line. ",
-         "From within there, run ", dQuote(paste0("CREATE DATABASE travis; ",
-         "GRANT ALL PRIVILEGES ON DATABASE travis TO postgres;")),
-         " You might also need to run ", dQuote("ALTER ROLE postgres WITH LOGIN;"),
-         ")", call. = FALSE)
-  }
-  conn
-}
+  tryCatch({ db_connection(system.file(package = "dbtest", "database.yml"), env = "test", ...)
+  }, error = function(e) {
+    if (grepl("does not exist", conditionMessage(e))) {
+      stop("Cannot run tests until you create a database named ", sQuote("travis"),
+           "for user ", sQuote("postgres"), ". (You should be able to open ",
+           "the PostgreSQL console using ", dQuote("psql postgres"),
+           " from the command line. ",
+           "From within there, run ", dQuote(paste0("CREATE DATABASE travis; ",
+           "GRANT ALL PRIVILEGES ON DATABASE travis TO postgres;")),
+           " You might also need to run ", dQuote("ALTER ROLE postgres WITH LOGIN;"),
+           ")", call. = FALSE)
+    } else { stop(e) } }) }
 
 
 #' Run a block of code where all DBI connections are mocked with the test connection.
-#' @param expr. A block of R code to run.
+#' @param expr expression. A block of R code to run.
 #' @export
 with_test_db <- function(expr) {
   DBI_namespace <- getNamespace("DBI") 
