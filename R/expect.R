@@ -9,6 +9,16 @@ expect_table <- function(table_name) {
 }
 
 
+#' Expect that a certain SQL statement will have a result.
+#'
+#' @param statement character. The SQL statement to run.
+#' @export
+expect_sql_exists <- function(statement) {
+  on_fail_message <- "Your query did not return a result."
+  testthat::expect_true(NROW(DBI::dbGetQuery(test_con, statement)) > 0, on_fail_message)
+}
+
+
 #' Expect that a certain SQL statement will evaluate to a result.
 #'
 #' @param statement character. The SQL statement to run.
