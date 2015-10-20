@@ -10,20 +10,19 @@ db_connection(database.yml, env, verbose = TRUE)
 \item{database.yml}{character. The location of the database.yml file
 to use. This could, for example, some file in the config directory.}
 
-\item{env}{character. What environment to use from the database.yml.}
+\item{env}{character. What environment to use from the database.yml.
+In the example database.yml, the environment is \code{development}.}
 
 \item{verbose}{logical. Whether or not to print messages indicating
-loading is in progress.}
+loading is in progress. Defaults to \code{TRUE}.}
 }
 \value{
-the database connection.
+the database connection specified by your database.yml file.
 }
 \description{
-By default, this function will read from the `cache` environment.
+Your database.yml should look like:
 }
 \details{
-Your database.yml should look like:
-
 development:
   adapter: PostgreSQL
   username: <username>
