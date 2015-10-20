@@ -61,7 +61,7 @@ expect_table_has <- function(test, table) {
 
   ## The count helper gives information about how many records are in that column.
   count <- function(colname) {
-    NROW(DBI::dbGetQuery(db_test_con(), paste0("SELECT COUNT(", colname, ") FROM ", table, ";")))
+    DBI::dbGetQuery(db_test_con(), paste0("SELECT COUNT(", colname, ") FROM ", table, ";"))$count
   }
 
   on_fail_message <- paste(table, "did not have property", deparse(substitute(test)))
