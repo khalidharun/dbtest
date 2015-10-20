@@ -1,3 +1,9 @@
+# Version 0.0.1
+
+- Added `expect_sql_exists`, which tests that the SQL query returns something.
+- Renamed `expect_sql_is` to `expect_sql_equals`.
+- `expect_sql_equals` now returns the data.frame rather than the individual result.
+
 # Version 0.0.0.9006
 - Make available for R 3.1
 

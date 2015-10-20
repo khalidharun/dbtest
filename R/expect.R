@@ -9,14 +9,24 @@ expect_table <- function(table_name) {
 }
 
 
+#' Expect that a certain SQL statement will have a result.
+#'
+#' @param statement character. The SQL statement to run.
+#' @export
+expect_sql_exists <- function(statement) {
+  on_fail_message <- "Your query did not return a result."
+  testthat::expect_true(NROW(DBI::dbGetQuery(test_con, statement)) > 0, on_fail_message)
+}
+
+
 #' Expect that a certain SQL statement will evaluate to a result.
 #'
 #' @param statement character. The SQL statement to run.
 #' @param expected ANY. The expected result.
 #' @examples \dontrun{expect_sql_is("SELECT id FROM flights LIMIT 1", 1)}
 #' @export
-expect_sql_is <- function(statement, expected) {
-  result <- unname(unlist(DBI::dbGetQuery(db_test_con(), statement)))
+expect_sql_equals <- function(statement, expected) {
+  result <- DBI::dbGetQuery(db_test_con(), statement)
   testthat::expect_equal(result, expected)
 }
 

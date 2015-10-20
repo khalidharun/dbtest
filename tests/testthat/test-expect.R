@@ -18,19 +18,32 @@ describe("expect_table", {
   })
 })
 
-describe("expect_sql_is", {
-  db_test_that("expect_sql_is errors when there is no table", {
-    expect_error(expect_sql_is("SELECT id FROM flights LIMIT 1", 1), "does not exist")
-  })
-  db_test_that("expect_sql_is is a passing test when the SQL query matches", {
+describe("expect_sql_exists", {
+  db_test_that("expect_sql_exists is a passing test when the SQL query returns a result", {
     DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
     DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
-    expect_sql_is("SELECT id FROM flights LIMIT 1", 1)
+    expect_sql_exists("SELECT id FROM flights WHERE id = 1")
   })
-  db_test_that("expect_sql_is is a failing test when the SQL query doesn't match", {
+  db_test_that("expect_sql_equals is a failing test when the SQL query doesn't match", {
     DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
     DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
-    expect_failed_test(expect_sql_is("SELECT id FROM flights LIMIT 1", 2))
+    expect_failed_test(expect_sql_exists("SELECT id FROM flights WHERE id = 2"))
+  })
+})
+
+describe("expect_sql_equals", {
+  db_test_that("expect_sql_equals errors when there is no table", {
+    expect_error(expect_sql_equals("SELECT id FROM flights LIMIT 1", data.frame(id = 1)), "does not exist")
+  })
+  db_test_that("expect_sql_equals is a passing test when the SQL query matches", {
+    DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+    DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+    expect_sql_equals("SELECT id FROM flights LIMIT 1", data.frame(id = 1))
+  })
+  db_test_that("expect_sql_equals is a failing test when the SQL query doesn't match", {
+    DBI::dbGetQuery(test_con, "CREATE TABLE flights (id int);")
+    DBI::dbGetQuery(test_con, "INSERT INTO flights (id) VALUES (1);")
+    expect_failed_test(expect_sql_equals("SELECT id FROM flights LIMIT 1", data.frame(id = 2)))
   })
 })
 

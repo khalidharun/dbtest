@@ -52,8 +52,12 @@ db_test_that("My test table has a test column with at least three entries", {
   expect_table_has(count("test") >= 3, table = "test")
 })
 
+db_test_that("'hello world' is in my test table", {
+  expect_sql_exists("SELECT test FROM test WHERE value = 'hello_world'")
+})
+
 db_test_that("The first value of my test column is 'hello world'", {
-  expect_sql_is("SELECT test FROM test LIMIT 1", "hello_world")
+  expect_sql_equals("SELECT test FROM test LIMIT 1", data.frame(test = "hello_world"))
 })
 ```
 
