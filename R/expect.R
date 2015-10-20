@@ -26,7 +26,7 @@ expect_sql_exists <- function(statement) {
 #' @examples \dontrun{expect_sql_is("SELECT id FROM flights LIMIT 1", 1)}
 #' @export
 expect_sql_equals <- function(statement, expected) {
-  result <- unname(unlist(DBI::dbGetQuery(db_test_con(), statement)))
+  result <- DBI::dbGetQuery(db_test_con(), statement)
   testthat::expect_equal(result, expected)
 }
 
