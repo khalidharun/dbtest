@@ -1,4 +1,4 @@
-DBTest [![Build Status](https://travis-ci.org/syberia/dbtest.svg?branch=master)](https://travis-ci.org/syberia/dbtest) [![Coverage Status](https://coveralls.io/repos/syberia/dbtest/badge.svg?branch=master)](https://coveralls.io/r/syberia/dbtest)
+DBTest [![Build Status](https://travis-ci.org/avantcredit/dbtest.svg?branch=master)](https://travis-ci.org/avantcredit/dbtest) [![Coverage Status](https://coveralls.io/repos/avantcredit/dbtest/badge.svg?branch=master)](https://coveralls.io/r/avantcredit/dbtest)
 =============
 
 DBTest is a package to provide database testing and mocking in R.
@@ -68,7 +68,7 @@ db_test_that("The first value of my test column is 'hello world'", {
 
 ```R
 if (!require("devtools")) { install.packages("devtools") }
-devtools::install_github("syberia/dbtest")
+devtools::install_github("avantcredit/dbtest")
 ```
 
 #### Creating the Test Database
