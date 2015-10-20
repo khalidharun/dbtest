@@ -1,4 +1,4 @@
-DBTest [![Build Status](https://travis-ci.org/avantcredit/dbtest.svg?branch=master)](https://travis-ci.org/avantcredit/dbtest) [![Coverage Status](https://coveralls.io/repos/avantcredit/dbtest/badge.svg?branch=master)](https://coveralls.io/r/avantcredit/dbtest)
+DBTest [![Build Status](https://travis-ci.org/avantcredit/dbtest.svg?branch=master)](https://travis-ci.org/avantcredit/dbtest) [![Coverage Status](https://coveralls.io/repos/avantcredit/dbtest/badge.svg?branch=master)](https://coveralls.io/r/avantcredit/dbtest) [![Documentation](https://img.shields.io/badge/rocco--docs-%E2%9C%93-blue.svg)](http://avantcredit.github.io/dbtest/)
 =============
 
 DBTest is a package to provide database testing and mocking in R.
