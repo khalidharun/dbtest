@@ -1,3 +1,9 @@
+# Version 0.0.2.9000
+
+- Added rocco docs.
+- Change the way `count` works in `expect_table_has`.
+- Made non-breaking clarifications to various functions.
+
 # Version 0.0.1
 
 - Added `expect_sql_exists`, which tests that the SQL query returns something.

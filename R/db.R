@@ -1,7 +1,5 @@
 #' Obtain a connection to a database.
 #'
-#' By default, this function will read from the `cache` environment.
-#'
 #' Your database.yml should look like:
 #'
 #' development:
@@ -15,12 +13,13 @@
 #' @param database.yml character. The location of the database.yml file
 #'   to use. This could, for example, some file in the config directory.
 #' @param env character. What environment to use from the database.yml.
+#'   In the example database.yml, the environment is \code{development}.
 #' @param verbose logical. Whether or not to print messages indicating
-#'   loading is in progress.
-#' @return the database connection.
+#'   loading is in progress. Defaults to \code{TRUE}.
+#' @return the database connection specified by your database.yml file.
 #' @export
 db_connection <- function(database.yml, env, verbose = TRUE) {
-  if (is.null(database.yml)) { stop("database.yml is NULL") }
+  if (is.null(database.yml)) { stop("Please pass a file name to a database.yml file.") }
   if (!file.exists(database.yml)) {
     stop("Provided database.yml file does not exist: ", database.yml)
   }
@@ -29,20 +28,23 @@ db_connection <- function(database.yml, env, verbose = TRUE) {
     message("* Loading database connection...\n")
   }
 
-  config.database <- read_yml(database.yml)
+  ## Read the yaml file for the database.yml
+  config <- read_yml(database.yml)
+  ## Check to make sure that an env is specified
   if (!missing(env) && !is.null(env)) {
-    if (!env %in% names(config.database))
+    if (!env %in% names(config)) {
       stop(paste0("Unable to load database settings from database.yml ",
               "for environment '", env, "'"))
-    config.database <- config.database[[env]]
-  } else if (missing(env) && length(config.database) == 1) {
-    config.database <- config.database[[1]]
+    }
+    ## Load the configuration for that environment
+    config <- config[[env]]
+    ## If there is only one config we can just load it.
+  } else if (missing(env) && length(config) == 1) {
+    config <- config[[1]]
   }
   ## Authorization arguments needed by the DBMS instance
-  ## Enforce rstats-db/RPostgres.
-  # TODO: (RK) Inform user if they forgot database.yml entries.
   do.call(DBI::dbConnect, append(list(drv = RPostgres::Postgres()),
-    config.database[!names(config.database) %in% "adapter"]))
+    config[!names(config) %in% "adapter"]))
 }
 
 
@@ -54,16 +56,22 @@ db_connection <- function(database.yml, env, verbose = TRUE) {
 #' @return a list of database connection and if it can be re-established.
 #' @export
 build_connection <- function(con, env) {
-  if (inherits(con, 'DBIConnection')) {
-    return(con)
-  } else if (is.character(con)) {
-    return(db_connection(con, env))
-  } else if (is.function(con)) {
-    return(con())
-  } else if (length(grep("SQLConnection", class(con)[1])) > 0) {
+  UseMethod("build_connection")
+}
+
+## Use S3 method dispatch to create connections for a variety of input parameters.
+build_connection.DBIConnection <- function(con, env) { con }
+build_connection.character <- function(con, env) { db_connection(con, env) }
+build_connection.function <- function(con, env) { con() }
+
+## Handle input that is not DBIConnection, character, or function.
+build_connection.default <- function(con, env) {
+  if (length(grep("SQLConnection", class(con)[1])) > 0) {
     return(con)
   } else {
-    stop("Invalid connection setup")
+    stop("The connection passed should be a DBIConnection, a SQLConnection, ",
+      "a string specifying a database.yml, or a function.  Instead, I got",
+      " a ", class(con), ".")
   }
 }
 
@@ -74,6 +82,7 @@ build_connection <- function(con, env) {
 #' @return `TRUE` or `FALSE` indicating if the database connection is good.
 #' @export
 is_db_connected <- function(con) {
+  ## The database is connected if we can run a simple query on the connection and get a result. 
   res <- tryCatch(DBI::dbGetQuery(con, "SELECT 1")[1, 1], error = function(e) NULL)
   if (is.null(res) || res != 1) FALSE else TRUE
 }
