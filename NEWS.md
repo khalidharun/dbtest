@@ -1,3 +1,6 @@
+# Version 0.0.2.9001
+- Remove the S3 dispatch because it breaks for objects with multiple classes.
+
 # Version 0.0.2.9000
 
 - Added rocco docs.
