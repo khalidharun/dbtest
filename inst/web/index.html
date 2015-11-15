@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>Index. dbtest 0.0.2.9001</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">dbtest 0.0.2.9001</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <div class="row">
+  <div class="span8">
+    <h1>DBTest <a href="https://travis-ci.org/avantcredit/dbtest"><img src="https://travis-ci.org/avantcredit/dbtest.svg?branch=master" alt="Build Status"/></a> <a href="https://codecov.io/github/avantcredit/dbtest"><img src="https://img.shields.io/codecov/c/github/avantcredit/dbtest/master.svg" alt="Coverage Status"/></a> <a href="http://avantcredit.github.io/dbtest/"><img src="https://img.shields.io/badge/rocco--docs-%E2%9C%93-blue.svg" alt="Documentation"/></a></h1>
+
+<p>DBTest is a package to provide database testing and mocking in R.</p>
+
+<p>Imagine you want to make a call to a production database&hellip;</p>
+
+<pre><code class="R">DBI::dbConnect(drv = DBI::dbDriver(&quot;Postgres&quot;), dbname = &quot;production&quot;)
+</code></pre>
+
+<p>But in your tests, you&#39;d prefer if your code called to a test database instead.</p>
+
+<p>DBTest provides <code>with_test_db</code>, which you can use like this:</p>
+
+<pre><code class="R">dbtest::with_test_db(
+  DBI::dbConnect(drv = DBI::dbDriver(&quot;Postgres&quot;), dbname = &quot;production&quot;)
+)
+</code></pre>
+
+<p>&hellip;that connection will be reset to a test connection instead!  And all calls to the production database within your tests will be mocked as calls to the test database.</p>
+
+<p>Also, in your tests <code>with_test_db</code> will create an R object called <code>test_con</code> which you can use to work with the connection.</p>
+
+<pre><code class="R">dbtest::with_test_db(DBI::dbListTables(test_con))   # test_con is a connection to the test database.
+</code></pre>
+
+<h2></h2>
+
+<p>Lastly, to create separate, safe test blocks where database actions in previous tests do not affect future tests, wrap individual tests in <code>db_test_that</code> instead of <code>test_that</code>.  If you do this, you do not need to use <code>with_test_db</code>.</p>
+
+<h2>Further Testing</h2>
+
+<p>You can then test your database with a variety of helpers:</p>
+
+<pre><code class="R">library(testthat)
+library(dbtest)
+
+db_test_that(&quot;My database has a test table&quot;, {
+  expect_table(&quot;test&quot;)
+})
+
+db_test_that(&quot;My test table has a test column&quot;, {
+  expect_table_has(column(&quot;test&quot;), table = &quot;test&quot;)
+})
+
+db_test_that(&quot;My test table has a test column with at least three entries&quot;, {
+  expect_table_has(count(&quot;test&quot;) &gt;= 3, table = &quot;test&quot;)
+})
+
+db_test_that(&quot;&#39;hello world&#39; is in my test table&quot;, {
+  expect_sql_exists(&quot;SELECT test FROM test WHERE value = &#39;hello_world&#39;&quot;)
+})
+
+db_test_that(&quot;The first value of my test column is &#39;hello world&#39;&quot;, {
+  expect_sql_equals(&quot;SELECT test FROM test LIMIT 1&quot;, data.frame(test = &quot;hello_world&quot;))
+})
+</code></pre>
+
+<h2>Installation</h2>
+
+<h4>Installing the Package</h4>
+
+<pre><code class="R">if (!require(&quot;devtools&quot;)) { install.packages(&quot;devtools&quot;) }
+devtools::install_github(&quot;avantcredit/dbtest&quot;)
+</code></pre>
+
+<h4>Creating the Test Database</h4>
+
+<pre><code>psql postgres
+CREATE DATABASE travis;
+GRANT ALL PRIVILEGES ON DATABASE travis TO postgres;
+ALTER ROLE postgres WITH LOGIN;
+</code></pre>
+
+<h2>License</h2>
+
+<p>This project is licensed under the MIT License:</p>
+
+<p>Copyright &copy; 2015-2016 Robert Krzyzanowski</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+&ldquo;Software&rdquo;), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED &ldquo;AS IS&rdquo;, WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+
+<h2>Authors</h2>
+
+<p>This package was created by Peter Hurford, using code originally written in <a href="https://github.com/robertzk/cachemeifyoucan">cachemeifyoucan</a>.</p>
+
+
+    <h2>Help topics</h2>
+
+    <h3></h3>
+    
+    
+    <ul class="index">
+        
+      <li>
+        <code><a href="build_connection.html">build_connection</a></code><br />Helper function to build the connection.</li>
+            
+      <li>
+        <code><a href="db_connection.html">db_connection</a></code><br />Obtain a connection to a database.</li>
+            
+      <li>
+        <code><a href="db_test_con.html">db_test_con</a></code><br />Create a connection to a test database for testing database transactions.</li>
+            
+      <li>
+        <code><a href="db_test_that.html">db_test_that</a></code><br />Run a single testthat test in a self-contained database transaction.</li>
+            
+      <li>
+        <code><a href="drop_all_test_tables.html">drop_all_test_tables</a></code><br />Drop all the tables in the test database.</li>
+            
+      <li>
+        <code><a href="expect_sql_equals.html">expect_sql_equals</a></code><br />Expect that a certain SQL statement will evaluate to a result.</li>
+            
+      <li>
+        <code><a href="expect_sql_exists.html">expect_sql_exists</a></code><br />Expect that a certain SQL statement will have a result.</li>
+            
+      <li>
+        <code><a href="expect_table.html">expect_table</a></code><br />Expect that the table exists in the test database.</li>
+            
+      <li>
+        <code><a href="expect_table_has.html">expect_table_has</a></code><br />Expect that the table has a certain property.</li>
+            
+      <li>
+        <code><a href="is_db_connected.html">is_db_connected</a></code><br />Helper function to check the database connection.</li>
+            
+      <li>
+        <code><a href="read_yml.html">read_yml</a></code><br />Reads a yaml file from a specified path.</li>
+            
+      <li>
+        <code><a href="with_test_db.html">with_test_db</a></code><br />Run a block of code where all DBI connections are mocked with the test connection.</li>
+    
+    </ul>
+  </div>
+  
+  <div class="span3 offset1">
+        
+    <h2>Dependencies</h2>
+    <ul>
+      
+      <li><strong>Imports</strong>: RPostgres, DBI, yaml</li>
+      <li><strong>Suggests</strong>: testthat</li>
+      
+    </ul>
+    <h2>Authors</h2>
+    <ul>
+      <li><a href="mailto:peter@peterhurford.com">Peter Hurford</a> [aut, cre]</li>
+    </ul>
+
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>
