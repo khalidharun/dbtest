@@ -30,18 +30,12 @@ db_connection <- function(database.yml, env, verbose = TRUE) {
 
   ## Read the yaml file for the database.yml
   config <- read_yml(database.yml)
+
   ## Check to make sure that an env is specified
-  if (!missing(env) && !is.null(env)) {
-    if (!env %in% names(config)) {
-      stop(paste0("Unable to load database settings from database.yml ",
-              "for environment '", env, "'"))
-    }
-    ## Load the configuration for that environment
-    config <- config[[env]]
-    ## If there is only one config we can just load it.
-  } else if (missing(env) && length(config) == 1) {
-    config <- config[[1]]
-  }
+  config <- get_config(config, env)
+  if (is.null(config)) stop(sprintf("Unable to load database settings from database.yml for %s",
+      paste(paste0("[", env, "]"), collapse = "")))
+
   ## Authorization arguments needed by the DBMS instance
   do.call(DBI::dbConnect, append(list(drv = RPostgres::Postgres()),
     config[!names(config) %in% "adapter"]))
@@ -76,7 +70,19 @@ build_connection <- function(con, env) {
 #' @return `TRUE` or `FALSE` indicating if the database connection is good.
 #' @export
 is_db_connected <- function(con) {
-  ## The database is connected if we can run a simple query on the connection and get a result. 
+  ## The database is connected if we can run a simple query on the connection and get a result.
   res <- tryCatch(DBI::dbGetQuery(con, "SELECT 1")[1, 1], error = function(e) NULL)
   if (is.null(res) || res != 1) FALSE else TRUE
+}
+
+#' Helper function to get settings from a nested config file
+#'
+#' @param config list. The output from a YML file as a list.
+#' @param env character. The keys of a nested to list to find the settings.
+#' @return The settings if found else `NULL`.
+get_config <- function(config, env) {
+  if (!is.character(env)) stop("env is not a character.")
+  if (!is.list(config)) stop("config is not a list.")
+  if (length(env) > 1) Recall(config[[env[1]]], env[-1])
+  config[[env]]
 }
