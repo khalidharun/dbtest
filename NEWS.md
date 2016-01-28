@@ -1,3 +1,6 @@
+# Version 0.0.2.9002
+- Added a get_options utility to be able to handle arbitrarily deeply nested config structures.
+
 # Version 0.0.2.9001
 - Remove the S3 dispatch because it breaks for objects with multiple classes.
 
